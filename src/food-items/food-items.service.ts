@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from 'src/prisma/prisma.service';
 import { CreateFoodItemDto } from './dto/create-food-item.dto';
@@ -11,9 +12,27 @@ export class FoodItemsService {
     return this.prisma.foodItem.create({ data: createFoodItemDto });
   }
 
-  findAll() {
+  findAll(params?: {
+    skip?: number;
+    take?: number;
+    cursor?: Prisma.FoodItemWhereUniqueInput;
+    where?: Prisma.FoodItemWhereInput;
+    orderBy?: Prisma.FoodItemOrderByWithRelationInput;
+  }) {
+    const {
+      skip,
+      take,
+      cursor,
+      where = { deletedAt: null },
+      orderBy,
+    } = params ?? {};
+
     return this.prisma.foodItem.findMany({
-      where: { deletedAt: null },
+      skip,
+      take,
+      cursor,
+      where,
+      orderBy,
     });
   }
 

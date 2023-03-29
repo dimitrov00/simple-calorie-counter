@@ -8,11 +8,17 @@ import {
   Param,
   Delete,
   UseFilters,
+  Query,
 } from '@nestjs/common';
 import { FoodItemsService } from './food-items.service';
 import { CreateFoodItemDto } from './dto/create-food-item.dto';
 import { UpdateFoodItemDto } from './dto/update-food-item.dto';
-import { ApiCreatedResponse, ApiTags, ApiOkResponse } from '@nestjs/swagger';
+import {
+  ApiCreatedResponse,
+  ApiTags,
+  ApiOkResponse,
+  ApiQuery,
+} from '@nestjs/swagger';
 import { PrismaClientExceptionFilter } from 'src/prisma-client-exception/prisma-client-exception.filter';
 
 @Controller('food-items')
@@ -28,9 +34,17 @@ export class FoodItemsController {
   }
 
   @Get()
+  @ApiQuery({
+    name: 'name',
+    type: String,
+    description: 'Food name Optional',
+    required: false,
+  })
   @ApiOkResponse({ type: FoodItemEntity, isArray: true })
-  findAll() {
-    return this.foodItemsService.findAll();
+  findAll(@Query('name') name?: string) {
+    return this.foodItemsService.findAll({
+      where: { name: { contains: name, mode: 'insensitive' } },
+    });
   }
 
   @Get(':id')
