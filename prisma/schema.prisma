@@ -1,0 +1,47 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model Patient {
+  id        Int      @id @default(autoincrement())
+  firstName String
+  lastName  String
+  logs      Log[]
+  deletedAt DateTime?
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model FoodItem {
+  id        Int       @id @default(autoincrement())
+  name      String
+  calories  Int
+  proteins  Float?
+  carbs     Float?
+  fats      Float?
+  deletedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  Log       Log[]
+}
+
+model Log {
+  id         Int       @id @default(autoincrement())
+  patientId  Int
+  patient    Patient   @relation(fields: [patientId], references: [id])
+  foodItemId Int
+  foodItem   FoodItem? @relation(fields: [foodItemId], references: [id])
+  date       DateTime
+  quantity   Float
+  deletedAt DateTime?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+}
